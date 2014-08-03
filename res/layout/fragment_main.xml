@@ -23,4 +23,34 @@
         android:layout_below="@+id/magic_number_label"
         android:ems="10" />
 
+    <Button
+        android:id="@+id/callButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/contactButton"
+        android:layout_alignBottom="@+id/contactButton"
+        android:layout_alignRight="@+id/magic_number"
+        android:layout_marginLeft="26dp"
+        android:layout_toRightOf="@+id/magic_number_label"
+        android:text="Call" />
+
+    <Button
+        android:id="@+id/contactButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/numberTextView"
+        android:layout_below="@+id/numberTextView"
+        android:layout_marginTop="18dp"
+        android:text="Contact" />
+
+    <TextView
+        android:id="@+id/numberTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/magic_number"
+        android:layout_below="@+id/magic_number"
+        android:layout_marginTop="14dp"
+        android:text="..." />
+
 </RelativeLayout>

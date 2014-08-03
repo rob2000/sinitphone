@@ -1,10 +1,14 @@
 package com.sinitphone.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -16,7 +20,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements
@@ -35,6 +41,8 @@ public class MainActivity extends ActionBarActivity implements
 	private CharSequence mTitle;
 
 	public final static String MAGIC_NUMBER_PREFERENCE = "magic_number"; 
+	
+	public static final int REQUEST_SELECT_PHONE_NUMBER = 1;
 	
 	SharedPreferences preferences;
 	
@@ -80,6 +88,37 @@ public class MainActivity extends ActionBarActivity implements
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
+			}
+			
+		});
+		
+		Button button = (Button)findViewById( R.id.contactButton );
+		button.setOnClickListener( new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent contactIntent = new Intent( Intent.ACTION_PICK );
+				contactIntent.setType( CommonDataKinds.Phone.CONTENT_TYPE );
+				if( contactIntent.resolveActivity( getPackageManager() ) != null )
+				{
+			        startActivityForResult( contactIntent, REQUEST_SELECT_PHONE_NUMBER );
+			    }
+			}
+			
+		});
+		
+		Button callButton = (Button)findViewById( R.id.callButton );
+		callButton.setOnClickListener( new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TextView numberToCallTextView = (TextView)findViewById( R.id.numberTextView );
+				Intent intent = new Intent( Intent.ACTION_DIAL );
+			    intent.setData( Uri.parse( "tel:" + numberToCallTextView.getText() ) );
+			    if( intent.resolveActivity( getPackageManager() ) != null )
+			    {
+			        startActivity( intent );
+			    }
 			}
 			
 		});
@@ -143,6 +182,26 @@ public class MainActivity extends ActionBarActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == REQUEST_SELECT_PHONE_NUMBER && resultCode == RESULT_OK) {
+	        // Get the URI and query the content provider for the phone number
+	        Uri contactUri = data.getData();
+	        String[] projection = new String[]{CommonDataKinds.Phone.NUMBER};
+	        Cursor cursor = getContentResolver().query(contactUri, projection,
+	                null, null, null);
+	        // If the cursor returned is valid, get the phone number
+	        if (cursor != null && cursor.moveToFirst()) {
+	            int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
+	            String number = cursor.getString(numberIndex);
+	            String magicNumber = preferences.getString( MAGIC_NUMBER_PREFERENCE, "$" );
+	            String numberToCall = magicNumber.replace( "$", number );
+	            TextView numberTextView = (TextView)findViewById( R.id.numberTextView );
+	            numberTextView.setText( numberToCall );
+	        }
+	    }
+	}	
+	
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
