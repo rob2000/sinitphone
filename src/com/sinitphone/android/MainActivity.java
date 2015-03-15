@@ -40,9 +40,11 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private CharSequence mTitle;
 
-	public final static String MAGIC_NUMBER_PREFERENCE = "magic_number"; 
+	public final static String MAGIC_NUMBER = "555555555$"; 
 	
 	public static final int REQUEST_SELECT_PHONE_NUMBER = 1;
+	
+	private String numberToCall = null;
 	
 	SharedPreferences preferences;
 	
@@ -56,8 +58,8 @@ public class MainActivity extends ActionBarActivity implements
 		mTitle = getTitle();
 
 		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-				(DrawerLayout) findViewById(R.id.drawer_layout));
+//		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
+//				(DrawerLayout) findViewById(R.id.drawer_layout));
 		
 		preferences = PreferenceManager.getDefaultSharedPreferences( this );
 		
@@ -65,32 +67,6 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	protected void onResume() {
-		
-		TextView magicNumberTextView = (TextView) findViewById( R.id.magic_number );
-		magicNumberTextView.setText( preferences.getString( MAGIC_NUMBER_PREFERENCE, "$" ) );
-		
-		magicNumberTextView.addTextChangedListener( new TextWatcher() {
-			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				Editor editor = preferences.edit();
-				editor.putString( MAGIC_NUMBER_PREFERENCE, s.toString() );
-				editor.commit();
-			}
-			
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-			}
-			
-		});
 		
 		Button button = (Button)findViewById( R.id.contactButton );
 		button.setOnClickListener( new OnClickListener() {
@@ -108,17 +84,22 @@ public class MainActivity extends ActionBarActivity implements
 		});
 		
 		Button callButton = (Button)findViewById( R.id.callButton );
+		
+		final TextView numberToCallTextView = (TextView)findViewById( R.id.numberTextView );
+		
 		callButton.setOnClickListener( new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				TextView numberToCallTextView = (TextView)findViewById( R.id.numberTextView );
-				Intent intent = new Intent( Intent.ACTION_DIAL );
-			    intent.setData( Uri.parse( "tel:" + numberToCallTextView.getText() ) );
-			    if( intent.resolveActivity( getPackageManager() ) != null )
-			    {
-			        startActivity( intent );
-			    }
+				if( numberToCall != null )
+				{
+					Intent intent = new Intent( Intent.ACTION_CALL );
+				    intent.setData( Uri.parse( "tel:" + numberToCall ) );
+				    if( intent.resolveActivity( getPackageManager() ) != null )
+				    {
+				        startActivity( intent );
+				    }
+				}
 			}
 			
 		});
@@ -137,17 +118,17 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section2);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section3);
-			break;
-		}
+//		switch (number) {
+//		case 1:
+//			mTitle = getString(R.string.title_section1);
+//			break;
+//		case 2:
+//			mTitle = getString(R.string.title_section2);
+//			break;
+//		case 3:
+//			mTitle = getString(R.string.title_section3);
+//			break;
+//		}
 	}
 
 	public void restoreActionBar() {
@@ -187,17 +168,18 @@ public class MainActivity extends ActionBarActivity implements
 	    if (requestCode == REQUEST_SELECT_PHONE_NUMBER && resultCode == RESULT_OK) {
 	        // Get the URI and query the content provider for the phone number
 	        Uri contactUri = data.getData();
-	        String[] projection = new String[]{CommonDataKinds.Phone.NUMBER};
+	        String[] projection = new String[]{CommonDataKinds.Phone.NUMBER,CommonDataKinds.Phone.DISPLAY_NAME};
 	        Cursor cursor = getContentResolver().query(contactUri, projection,
 	                null, null, null);
 	        // If the cursor returned is valid, get the phone number
 	        if (cursor != null && cursor.moveToFirst()) {
 	            int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
+	            int nameIndex = cursor.getColumnIndex(CommonDataKinds.Phone.DISPLAY_NAME);
 	            String number = cursor.getString(numberIndex);
-	            String magicNumber = preferences.getString( MAGIC_NUMBER_PREFERENCE, "$" );
-	            String numberToCall = magicNumber.replace( "$", number );
+	            String name = cursor.getString(nameIndex);
+	            numberToCall = MAGIC_NUMBER.replace( "$", normalizeNumber( number ) );
 	            TextView numberTextView = (TextView)findViewById( R.id.numberTextView );
-	            numberTextView.setText( numberToCall );
+	            numberTextView.setText( number + " (" + name + ")" );
 	        }
 	    }
 	}	
@@ -236,37 +218,6 @@ public class MainActivity extends ActionBarActivity implements
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
 			
-			TextView magicNumberTextView = (TextView) rootView.findViewById( R.id.magic_number );
-			magicNumberTextView.setText( preferences.getString( MAGIC_NUMBER_PREFERENCE, "$" ) );
-			
-			magicNumberTextView.addTextChangedListener( new TextWatcher() {
-				
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					Editor editor = preferences.edit();
-					editor.putString( MAGIC_NUMBER_PREFERENCE, s.toString() );
-					editor.commit();
-				}
-				
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count,
-						int after) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-				@Override
-				public void afterTextChanged(Editable s) {
-					// TODO Auto-generated method stub
-				}
-				
-			});
-			
-//			TextView textView = (TextView) rootView
-//					.findViewById(R.id.section_label);
-//			textView.setText(Integer.toString(getArguments().getInt(
-//					ARG_SECTION_NUMBER)));
-			
 			return rootView;
 		}
 
@@ -282,6 +233,28 @@ public class MainActivity extends ActionBarActivity implements
 			// TODO Auto-generated method stub
 			super.onViewCreated(view, savedInstanceState);
 		}		
+		
+	}
+	
+	private String normalizeNumber( String number )
+	{
+		
+		if( number.startsWith( "+" ) )
+		{
+			return number = "00" + number.substring( 1 );
+		}
+		else if( number.startsWith( "00" ) )
+		{
+			return number;
+		}
+		else if( number.startsWith( "0" ) )
+		{
+			return "0049" + number.substring( 1 );
+		}
+		else
+		{
+			return number;
+		}
 		
 	}
 
