@@ -18,7 +18,14 @@ public class NewCallReceiver extends BroadcastReceiver {
 			if( extraBundle != null && extraBundle.containsKey( Intent.EXTRA_PHONE_NUMBER ) )
 			{
 				String phoneNumber = extraBundle.getString( Intent.EXTRA_PHONE_NUMBER );
-				setResultData( MainActivity.MAGIC_NUMBER.replace( "$", phoneNumber ) );
+				if( preferences.getBoolean( MainActivity.ALWAYS_CALL_PREFIX + phoneNumber, false ) )
+				{
+					setResultData( MainActivity.MAGIC_NUMBER.replace( "$", MainActivity.normalizeNumber( phoneNumber ) ) );
+				}
+				else
+				{
+					setResultData( phoneNumber );
+				}
 			}
 		}
 	}

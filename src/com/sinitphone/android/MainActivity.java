@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements
@@ -43,16 +44,34 @@ public class MainActivity extends ActionBarActivity implements
 	public final static String MAGIC_NUMBER = "555555555$"; 
 	
 	public static final int REQUEST_SELECT_PHONE_NUMBER = 1;
+
+	private static final String NUMBER_TO_CALL = "number_to_call_key";
+
+	private static final String NUMBER_TEXT = "number_text_key";
+	
+	public static final String ALWAYS_CALL_PREFIX = "always_call_";
 	
 	private String numberToCall = null;
+	
+	private TextView numberTextView;
+  
+	private Button callButton;
+	
+	private CheckedTextView alwaysCallCheck;
 	
 	SharedPreferences preferences;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.activity_main);
 
+		if( savedInstanceState != null )
+		{
+			numberToCall = (String) savedInstanceState.getCharSequence( NUMBER_TO_CALL );
+		}
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -63,6 +82,33 @@ public class MainActivity extends ActionBarActivity implements
 		
 		preferences = PreferenceManager.getDefaultSharedPreferences( this );
 		
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		
+		numberTextView = (TextView)findViewById( R.id.numberTextView );
+		callButton = (Button)findViewById( R.id.callButton );
+		alwaysCallCheck = (CheckedTextView)findViewById( R.id.allways_call );
+		
+		if( savedInstanceState != null )
+		{
+			numberTextView.setText( savedInstanceState.getCharSequence( NUMBER_TEXT ) );
+		}
+		
+		if( numberToCall != null )
+		{
+			callButton.setVisibility( View.VISIBLE );
+			alwaysCallCheck.setVisibility( View.VISIBLE );
+		}
+		else
+		{
+			callButton.setVisibility( View.GONE );
+			alwaysCallCheck.setVisibility( View.GONE );
+			alwaysCallCheck.setChecked( checkForAlwaysCall( numberToCall ) );
+		}
+		
+		super.onPostCreate(savedInstanceState);
 	}
 
 	@Override
@@ -83,10 +129,6 @@ public class MainActivity extends ActionBarActivity implements
 			
 		});
 		
-		Button callButton = (Button)findViewById( R.id.callButton );
-		
-		final TextView numberToCallTextView = (TextView)findViewById( R.id.numberTextView );
-		
 		callButton.setOnClickListener( new OnClickListener() {
 			
 			@Override
@@ -94,11 +136,29 @@ public class MainActivity extends ActionBarActivity implements
 				if( numberToCall != null )
 				{
 					Intent intent = new Intent( Intent.ACTION_CALL );
-				    intent.setData( Uri.parse( "tel:" + numberToCall ) );
+				    intent.setData( Uri.parse( "tel:" + MAGIC_NUMBER.replace( "$", normalizeNumber( numberToCall ) ) ) );
 				    if( intent.resolveActivity( getPackageManager() ) != null )
 				    {
 				        startActivity( intent );
 				    }
+				}
+			}
+			
+		});
+		
+		alwaysCallCheck.setOnClickListener( new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if( alwaysCallCheck.isChecked() )
+				{
+					alwaysCallCheck.setChecked( false );
+					setAlwaysCallState( numberToCall, false );
+				}
+				else
+				{
+					alwaysCallCheck.setChecked( true );
+					setAlwaysCallState( numberToCall, true );
 				}
 			}
 			
@@ -177,9 +237,11 @@ public class MainActivity extends ActionBarActivity implements
 	            int nameIndex = cursor.getColumnIndex(CommonDataKinds.Phone.DISPLAY_NAME);
 	            String number = cursor.getString(numberIndex);
 	            String name = cursor.getString(nameIndex);
-	            numberToCall = MAGIC_NUMBER.replace( "$", normalizeNumber( number ) );
-	            TextView numberTextView = (TextView)findViewById( R.id.numberTextView );
+	            numberToCall = number;
 	            numberTextView.setText( number + " (" + name + ")" );
+	            callButton.setVisibility( View.VISIBLE );
+	            alwaysCallCheck.setChecked( checkForAlwaysCall( numberToCall ) );
+	            alwaysCallCheck.setVisibility( View.VISIBLE );
 	        }
 	    }
 	}	
@@ -213,8 +275,6 @@ public class MainActivity extends ActionBarActivity implements
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			
-			final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( getActivity() );
-			
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
 			
@@ -236,7 +296,16 @@ public class MainActivity extends ActionBarActivity implements
 		
 	}
 	
-	private String normalizeNumber( String number )
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putCharSequence( NUMBER_TO_CALL, numberToCall );
+		
+		outState.putCharSequence( NUMBER_TEXT, numberTextView.getText() );
+		super.onSaveInstanceState(outState);
+	}
+
+	
+	public static String normalizeNumber( String number )
 	{
 		
 		if( number.startsWith( "+" ) )
@@ -256,6 +325,18 @@ public class MainActivity extends ActionBarActivity implements
 			return number;
 		}
 		
+	}
+	
+	private boolean checkForAlwaysCall( String number )
+	{
+		return preferences.getBoolean( ALWAYS_CALL_PREFIX + number, false );
+	}
+	
+	private void setAlwaysCallState( String number, boolean state )
+	{
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putBoolean( ALWAYS_CALL_PREFIX + number, state );
+		editor.commit();
 	}
 
 }

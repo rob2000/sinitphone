@@ -1102,11 +1102,12 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f090002;
         public static final int action_menu_presenter=0x7f090003;
         public static final int action_mode_close_button=0x7f090024;
-        public static final int action_settings=0x7f090042;
+        public static final int action_settings=0x7f090043;
         public static final int activity_chooser_view_content=0x7f090025;
+        public static final int allways_call=0x7f090041;
         public static final int always=0x7f09000f;
         public static final int beginning=0x7f090016;
-        public static final int callButton=0x7f090041;
+        public static final int callButton=0x7f090042;
         public static final int checkbox=0x7f09002d;
         public static final int collapseActionView=0x7f090010;
         public static final int contactButton=0x7f09003f;
@@ -1262,6 +1263,8 @@ containing a value of this type.
         public static final int action_example=0x7f0a0013;
         public static final int action_settings=0x7f0a0014;
         public static final int app_name=0x7f0a000d;
+        public static final int call=0x7f0a0017;
+        public static final int contact=0x7f0a0016;
         public static final int magic_number=0x7f0a0015;
         public static final int navigation_drawer_close=0x7f0a0012;
         public static final int navigation_drawer_open=0x7f0a0011;

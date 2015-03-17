@@ -9,14 +9,14 @@
  
     <Button
         android:id="@+id/contactButton"
-        android:drawableLeft="@drawable/ic_action_search"
+        android:drawableTop="@drawable/ic_action_search"
         android:background="@drawable/btn_default"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
-        android:text="Contact" />    
+        android:text="@string/contact" />    
     
    <TextView
         android:id="@+id/numberTextView"
@@ -27,15 +27,26 @@
         android:layout_centerHorizontal="true"
         android:text="..." />
     
+   	<CheckedTextView
+   	    android:id="@+id/allways_call"
+   	    android:layout_width="wrap_content"
+   	    android:layout_height="wrap_content"
+   	    android:layout_below="@+id/numberTextView"
+        android:layout_centerHorizontal="true"
+        android:checked="false"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+   	    android:text="always call with SinitPhone"
+   	    android:layout_marginBottom="20dp">
+   	</CheckedTextView>    
+   
     <Button
         android:id="@+id/callButton"
-        android:drawableLeft="@drawable/ic_action_call"
+        android:drawableTop="@drawable/ic_action_call"
         android:background="@drawable/btn_default"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_below="@+id/numberTextView"
+        android:layout_below="@+id/allways_call"
         android:layout_centerHorizontal="true"
-        android:text="Call" />
+        android:text="@string/call" />
 
 </RelativeLayout>
