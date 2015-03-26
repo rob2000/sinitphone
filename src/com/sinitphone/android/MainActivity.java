@@ -41,8 +41,6 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private CharSequence mTitle;
 
-	public final static String MAGIC_NUMBER = "555555555$"; 
-	
 	public static final int REQUEST_SELECT_PHONE_NUMBER = 1;
 
 	private static final String NUMBER_TO_CALL = "number_to_call_key";
@@ -81,6 +79,8 @@ public class MainActivity extends ActionBarActivity implements
 //				(DrawerLayout) findViewById(R.id.drawer_layout));
 		
 		preferences = PreferenceManager.getDefaultSharedPreferences( this );
+		
+		PreferenceManager.setDefaultValues( this, R.xml.preferences, false);
 		
 	}
 
@@ -136,7 +136,7 @@ public class MainActivity extends ActionBarActivity implements
 				if( numberToCall != null )
 				{
 					Intent intent = new Intent( Intent.ACTION_CALL );
-				    intent.setData( Uri.parse( "tel:" + MAGIC_NUMBER.replace( "$", normalizeNumber( numberToCall ) ) ) );
+				    intent.setData( Uri.parse( "tel:" + preferences.getString( "phonenumber_prefix", "" ) + "," + normalizeNumber( numberToCall ) ) );
 				    if( intent.resolveActivity( getPackageManager() ) != null )
 				    {
 				        startActivity( intent );
@@ -218,6 +218,7 @@ public class MainActivity extends ActionBarActivity implements
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			openSettings();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -325,6 +326,10 @@ public class MainActivity extends ActionBarActivity implements
 			return number;
 		}
 		
+	}
+	
+	private void openSettings() {
+		startActivity( new Intent( this, SettingsActivity.class ) );
 	}
 	
 	private boolean checkForAlwaysCall( String number )

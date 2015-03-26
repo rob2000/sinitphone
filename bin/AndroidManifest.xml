@@ -7,29 +7,38 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
-	<uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" /> 
-	<uses-permission android:name="android.permission.CALL_PHONE" />
-	
+
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.sinitphone.android.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <receiver android:name="NewCallReceiver" android:exported="true" android:enabled="true">
-        <intent-filter>
-            <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-        </intent-filter>
-    </receiver>
 
+        <receiver
+            android:name=".NewCallReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

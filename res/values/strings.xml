@@ -12,5 +12,8 @@
     <string name="magic_number">magic number:</string>
     <string name="contact">Contact</string>
     <string name="call">Call</string>
+    <string name="sinitphone_prefix_default">555555555555</string>
+    <string name="sinitphone_phonenumber">SinitPhone phone number</string>
+    <string name="always_call_with_sinitphone">always call with SinitPhone</string>
 
 </resources>

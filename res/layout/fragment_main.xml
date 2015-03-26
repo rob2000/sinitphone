@@ -35,7 +35,7 @@
         android:layout_centerHorizontal="true"
         android:checked="false"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-   	    android:text="always call with SinitPhone"
+   	    android:text="@string/always_call_with_sinitphone"
    	    android:layout_marginBottom="20dp">
    	</CheckedTextView>    
    
