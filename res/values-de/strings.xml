@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SinitPhone</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="contact">Kontakt</string>
+    <string name="call">Anrufen</string>
+    <string name="sinitphone_phonenumber">SinitPhone Telefonnummer</string>
+    <string name="always_call_with_sinitphone">immer mit SinitPhone anrufen</string>
+
+</resources>
