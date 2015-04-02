@@ -20,7 +20,7 @@ public class NewCallReceiver extends BroadcastReceiver {
 				String phoneNumber = extraBundle.getString( Intent.EXTRA_PHONE_NUMBER );
 				if( preferences.getBoolean( MainActivity.ALWAYS_CALL_PREFIX + phoneNumber, false ) )
 				{
-					setResultData( preferences.getString( "phonenumber_prefix", "" ) + "," + MainActivity.normalizeNumber( phoneNumber ) );
+					setResultData( preferences.getString( "phonenumber_prefix", "" ) + "," + MainActivity.normalizeNumber( phoneNumber ) + "#" );
 				}
 				else
 				{

@@ -136,7 +136,7 @@ public class MainActivity extends ActionBarActivity implements
 				if( numberToCall != null )
 				{
 					Intent intent = new Intent( Intent.ACTION_CALL );
-				    intent.setData( Uri.parse( "tel:" + preferences.getString( "phonenumber_prefix", "" ) + "," + normalizeNumber( numberToCall ) ) );
+				    intent.setData( Uri.parse( "tel:" + preferences.getString( "phonenumber_prefix", "" ) + "," + normalizeNumber( numberToCall ) + "#" ) );
 				    if( intent.resolveActivity( getPackageManager() ) != null )
 				    {
 				        startActivity( intent );
